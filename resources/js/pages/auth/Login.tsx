@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 
 interface formData {
@@ -8,7 +8,16 @@ interface formData {
 }
 
 const Login = () => {
-    const { login } = useAuth();
+    const navigate = useNavigate();
+    const { login, authToken, isLoading } = useAuth();
+
+    useEffect(() => {
+      if(authToken){
+        navigate('/');
+      }
+    
+    }, [authToken])
+    
 
     const [formData, setFormData] = useState<formData>({
         email: 'idris@email.com',

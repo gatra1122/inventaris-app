@@ -6,11 +6,11 @@ import { AuthProvider } from './context/AuthContext';
 
 const App = () => {
     return (
-        <AuthProvider>
-            <BrowserRouter>
+        <BrowserRouter>
+            <AuthProvider>
                 <AppRoutes />
-            </BrowserRouter>
-        </AuthProvider>
+            </AuthProvider>
+        </BrowserRouter>
     );
 };
 

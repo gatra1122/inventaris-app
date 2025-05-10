@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
-
+use Laravel\Sanctum\PersonalAccessToken;
 
 class AuthController extends Controller
 {
@@ -65,18 +65,25 @@ class AuthController extends Controller
         ]);
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        // Auth::guard('web')->logout();
         // $request->user()->tokens->each(function ($token) {
         //     $token->delete();
         // });
-        Auth::logout();
+
+        $accessToken = $request->bearerToken();
+
+        if ($accessToken) {
+            $token = PersonalAccessToken::findToken($accessToken);
+            if ($token && $token->tokenable_id === $request->user()->id) {
+                $token->delete();
+            }
+        }
+
         return response()->json([
             'status' => true,
             'message' => 'User logged out successfully'
         ]);
-        // return response()->json(['message' => 'Logged out successfully.']);
     }
 
     public function me()
@@ -87,14 +94,6 @@ class AuthController extends Controller
             'status' => true,
             'message' => 'Authenticated user data',
             'user' => $user
-        ]);
-    }
-
-    public function test(Request $request)
-    {
-        return response()->json([
-            'message' => 'POST berhasil',
-            'data' => $request->all(),
         ]);
     }
 }
