@@ -1,12 +1,14 @@
 import React from 'react';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const DashboardLayout = () => {
+    const { logout } = useAuth();
     const navigate = useNavigate();
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
         // Logika logout bisa ditambahkan di sini
-        console.log("Logout clicked");
+        await logout();
         navigate('/login');
     };
 
