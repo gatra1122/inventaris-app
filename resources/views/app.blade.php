@@ -7,6 +7,8 @@
     <title>Inventaris App</title>
     @viteReactRefresh
     @vite(['resources/js/main.tsx'])
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
