@@ -39,7 +39,7 @@ class KategoriPolicy
      */
     public function update(User $user, Kategori $kategori): Response
     {
-        return $user->role === 'admin'
+        return $user->role === 'user'
             ? Response::allow()
             : Response::deny('Hanya admin yang dapat mengakses.');
     }

@@ -1,22 +1,43 @@
 import React, { useState } from 'react';
+import axiosClient from '../../utils/axios';
+import { AxiosError } from 'axios';
+import { toast } from 'react-toastify';
+import { useAuth } from '../../context/AuthContext';
 
 interface FormProps {
     id: string;
     kategoriVal: string;
+    kategoriId: string;
 }
 
 interface formData {
     kategori: string,
 }
 
-const EditFormKategori: React.FC<FormProps> = ({ id, kategoriVal }) => {
+const EditFormKategori: React.FC<FormProps> = ({ id, kategoriVal, kategoriId }) => {
+    const { authToken } = useAuth();
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState<formData>({
         kategori: kategoriVal,
     })
 
-    const handleSubmitForm = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(formData.kategori);
+        setLoading(true);
+        try {
+            console.log(authToken)
+            const kat = formData.kategori;
+            const response = await axiosClient.put(`/kategori/${kategoriId}`, formData);
+
+            if (response.data.status) {
+                console.log('berhasil update')
+            }
+        } catch (error: any | AxiosError) {
+            console.log(error)
+            toast.error(error.response.data.message);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const handleOnChangeInput = (event: React.ChangeEvent<HTMLInputElement>) => {

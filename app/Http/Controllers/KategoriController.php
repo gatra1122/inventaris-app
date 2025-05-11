@@ -6,6 +6,7 @@ use App\Models\DataMaster\Kategori;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreKategoriRequest;
 use App\Http\Requests\UpdateKategoriRequest;
+use Illuminate\Support\Facades\Gate;
 
 class KategoriController extends Controller
 {
@@ -31,14 +32,6 @@ class KategoriController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreKategoriRequest $request)
@@ -49,25 +42,23 @@ class KategoriController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Kategori $kategori)
+    public function show(string $id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Kategori $kategori)
-    {
-        //
+        $kat = Kategori::findOrFail($id);
+        return response()->json($kat);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateKategoriRequest $request, Kategori $kategori)
+    public function update(UpdateKategoriRequest $request, string $id)
     {
-        //
+        // $this->authorize('update', $kategori);
+        $kat = Kategori::findOrFail($id);
+        $validated = $request->validated();
+        $kat->update($validated);
+
+        return response()->json($kat);
     }
 
     /**

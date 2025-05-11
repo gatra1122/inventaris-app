@@ -254,7 +254,7 @@ const KategoriTable = () => {
                 open={editformModal}
                 setOpen={setEditFormModal}
                 title={'Edit Kategori'}
-                content={<EditFormKategori id={'editFormKategori'} kategoriVal={`${selectedKtg?.kategori}`} />}
+                content={<EditFormKategori id={'editFormKategori'} kategoriVal={`${selectedKtg?.kategori}`} kategoriId={`${selectedKtg?.id}`} />}
                 type={ModalTypes.Submit}
                 disableIcon
                 formId={'editFormKategori'}
