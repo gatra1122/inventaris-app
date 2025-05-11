@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DestroyKategoriRequest;
 use App\Models\DataMaster\Kategori;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreKategoriRequest;
@@ -97,7 +98,7 @@ class KategoriController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(DestroyKategoriRequest $request, string $id)
     {
         $kat = Kategori::findOrFail($id);
         $kat->delete();

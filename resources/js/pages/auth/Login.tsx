@@ -12,12 +12,12 @@ const Login = () => {
     const { login, authToken, isLoading } = useAuth();
 
     useEffect(() => {
-      if(authToken){
-        navigate('/');
-      }
-    
+        if (authToken) {
+            navigate('/');
+        }
+
     }, [authToken])
-    
+
 
     const [formData, setFormData] = useState<formData>({
         email: 'admin1@email.com',
@@ -48,6 +48,7 @@ const Login = () => {
                     <div>
                         <label className="block text-gray-700 mb-1" htmlFor="email">Email</label>
                         <input
+                            name='email'
                             onChange={handleOnChangeInput}
                             value={formData.email}
                             type="email"
@@ -60,6 +61,7 @@ const Login = () => {
                     <div>
                         <label className="block text-gray-700 mb-1" htmlFor="password">Password</label>
                         <input
+                            name='password'
                             onChange={handleOnChangeInput}
                             value={formData.password}
                             type="password"

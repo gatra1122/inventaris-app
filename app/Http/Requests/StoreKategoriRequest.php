@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class StoreKategoriRequest extends FormRequest
 {
@@ -11,7 +12,9 @@ class StoreKategoriRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        $user = Auth::user();
+        return $user && $user->role === 'admin';
+        // return true;
     }
 
     /**

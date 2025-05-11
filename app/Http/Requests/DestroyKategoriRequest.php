@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class UpdateKategoriRequest extends FormRequest
+class DestroyKategoriRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +14,7 @@ class UpdateKategoriRequest extends FormRequest
     {
         $user = Auth::user();
         return $user && $user->role === 'admin';
-        // return true;
+        // return false;
     }
 
     /**
@@ -25,7 +25,7 @@ class UpdateKategoriRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'kategori' => 'string',
+            //
         ];
     }
 }
