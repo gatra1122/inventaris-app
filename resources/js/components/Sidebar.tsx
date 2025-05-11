@@ -22,6 +22,14 @@ const Sidebar = () => {
                             User
                         </Link>
                     </li>
+                    <li>
+                        <Link
+                            to="/kategori"
+                            className="block px-4 py-2 rounded hover:bg-gray-200"
+                        >
+                            Kategori
+                        </Link>
+                    </li>
                 </ul>
             </aside>
         </>

@@ -36,7 +36,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const navigate = useNavigate();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
     const [user, setUser] = useState<UserType | null>(null);
     const [authToken, setAuthToken] = useState<string | undefined>(undefined);
 
@@ -60,10 +60,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (!user) {
                 me();
             }
-            navigate('/');
         } else {
             setAuthToken(undefined);
-            navigate('/login');
+            setIsLoading(false);
         }
     }, [])
 
@@ -126,6 +125,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return (
         <AuthContext.Provider value={{ user, login, register, logout, isLoading, authToken }}>
             {isLoading ? <Loading /> : children}
+            {/* {children} */}
         </AuthContext.Provider>
     );
 }

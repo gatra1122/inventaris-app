@@ -1,12 +1,20 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Navbar from '../components/Navbar';
 import Sidebar from '../components/Sidebar';
 import { toast } from 'react-toastify';
+import { useEffect } from 'react';
 
 const DashboardLayout = () => {
-    const { authToken, isLoading } = useAuth();
+    const navigate = useNavigate();
+    const { authToken, isLoading, user } = useAuth();
 
+    useEffect(() => {
+      if(!authToken && !isLoading){
+        navigate('/login');
+      }
+    }, [])
+    
     if (!authToken && !isLoading) {
         return null;
     }

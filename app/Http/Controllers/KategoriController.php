@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataMaster\Kategori;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreKategoriRequest;
 use App\Http\Requests\UpdateKategoriRequest;
 
@@ -11,9 +12,22 @@ class KategoriController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $page = (int) $request->query('page', 1);
+        $perPage = (int) $request->query('per_page', 10);
+        $search = $request->query('search');
+
+        $query = Kategori::query()
+            ->when($search, fn($q) => $q->where('kategori', 'ILIKE', "%{$search}%"))
+            ->orderByDesc('updated_at');
+        $kategori = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data kategori berhasil diambil.',
+            'data' => $kategori,
+        ]);
     }
 
     /**

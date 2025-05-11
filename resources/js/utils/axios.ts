@@ -16,7 +16,6 @@ axiosClient.interceptors.request.use(
     (config) => {
         const token = Cookies.get('authToken');
         if (token && config.headers) {
-            console.log('axios')
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
