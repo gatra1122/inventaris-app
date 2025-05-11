@@ -17,13 +17,8 @@ import {
     ChevronDoubleRightIcon as CevDRightI, ChevronLeftIcon as CevLeftI, ChevronDoubleLeftIcon as CevDLeftI
 } from '@heroicons/react/16/solid';
 import { useDebounce } from 'use-debounce';
-// import ModalDialog from '@/components/ModalDialog';
-import Modal, { ModalTypes } from '../Modal';
 import { toast } from 'react-toastify';
-import EditFormKategori from '../form/EditFormKategori';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
-import { AxiosError } from 'axios';
-// import EditKategori from '../form/kategori/EditKategori';
 
 const KategoriTable = () => {
     const queryClient = useQueryClient();
@@ -84,7 +79,7 @@ const KategoriTable = () => {
                 <div className='inline-flex gap-1'>
                     <button className='!bg-yellow-500 inline-flex items-center gap-1' onClick={() => {
                         setSelectedKtg(row.original);
-                        setEditFormModal(true);
+                        setEditModal(true);
                     }}>
                         <PencilIcon className='size-5' />Edit
                     </button>
@@ -118,13 +113,11 @@ const KategoriTable = () => {
     const [deleteLoading, setDeleteLoading] = useState(false);
 
     const deleteMutation = useMutation({
-        mutationFn: async (id: number) => {
-            setDeleteLoading(true);
-            return await axiosClient.delete(`/kategori/${id}`);
+        mutationFn: async () => {
+            return await axiosClient.delete(`/kategori/${selectedKtg!.id}`);
         },
         onSuccess: () => {
-            // queryClient.invalidateQueries({ queryKey: ['barang', pagination.pageIndex, debouncedSearch] });
-            queryClient.invalidateQueries({ queryKey: ['kategori'] });
+            queryClient.invalidateQueries({ predicate: query => query.queryKey[0] === 'kategori' });
             setDeleteModal(false);
             setSelectedKtg(null);
             setDeleteLoading(false);
@@ -138,68 +131,81 @@ const KategoriTable = () => {
         }
     });
 
-    const handleDelete = (id: number) => {
-        deleteMutation.mutate(id);
+    const handleDelete = () => {
+        setDeleteLoading(true);
+        deleteMutation.mutate();
     };
 
-    const [editFormModal, setEditFormModal] = useState(false);
-    const [editKategoriVal, setEditKategoriVal] = useState('');
-    const [submitEditLoading, setSubmitEditLoading] = useState(false);
+    const [editModal, setEditModal] = useState(false);
+    const [updateValue, setUpdateValue] = useState('');
+    const [updateLoading, setUpdateLoading] = useState(false);
 
     useEffect(() => {
-        if (editFormModal) {
-            setEditKategoriVal(`${selectedKtg?.kategori}`);
+        if (editModal) {
+            setUpdateValue(`${selectedKtg?.kategori}`);
         } else {
-            setEditKategoriVal('')
+            setUpdateValue('')
         }
-    }, [editFormModal])
+    }, [editModal])
+
+    const updateMutation = useMutation({
+        mutationFn: async () => {
+            return await axiosClient.put(`/kategori/${selectedKtg?.id}`, {
+                kategori: updateValue
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ predicate: query => query.queryKey[0] === 'kategori' });
+            setUpdateLoading(false);
+            setEditModal(false);
+            toast.success('Berhasil memperbarui kategori');
+        },
+        onError: (error: any) => {
+            setUpdateLoading(false);
+            const errorMessage = error.response?.data?.message || 'Terjadi kesalahan jaringan.';
+            toast.error(`Gagal memperbarui: ${errorMessage}`);
+        }
+    });
 
     const handleFormEdit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setSubmitEditLoading(true);
-        try {
-            const response = await axiosClient.put(`/kategori/${selectedKtg?.id}`, {
-                kategori: editKategoriVal
-            });
-            if (response.data.success) {
-                toast.success('Berhasil memperbarui kategori')
-            }
-            queryClient.invalidateQueries({ queryKey: ['kategori'] });
-        } catch (error: any | AxiosError) {
-            toast.error(error.response.data.message);
-        } finally {
-            setSubmitEditLoading(false);
-            setEditFormModal(false);
-        }
+        setUpdateLoading(true);
+        updateMutation.mutate();
     }
 
-    const [createFormModal, setCreateFormModal] = useState(false);
-    const [createKategoriVal, setCreateKategoriVal] = useState('');
-    const [submitCreateLoading, setSubmitCreateLoading] = useState(false);
+    const [storeModal, setStoreModal] = useState(false);
+    const [storeValue, setStoreValue] = useState('');
+    const [storeLoading, setStoreLoading] = useState(false);
 
     useEffect(() => {
-        if (!createFormModal) {
-            setCreateKategoriVal('');
+        if (!storeModal) {
+            setStoreValue('');
         }
-    }, [createFormModal])
+    }, [storeModal])
+
+    const storeMutation = useMutation({
+        mutationFn: async () => {
+            return await axiosClient.post(`/kategori`, {
+                kategori: storeValue
+            });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ predicate: query => query.queryKey[0] === 'kategori' });
+            setStoreLoading(false);
+            setStoreModal(false);
+            toast.success('Berhasil menambahkan kategori')
+        },
+        onError: (error: any) => {
+            setStoreLoading(false);
+            const errorMessage = error.response?.data?.message || 'Terjadi kesalahan jaringan.';
+            toast.error(`Gagal memperbarui: ${errorMessage}`);
+        }
+    });
 
     const handleFormCreate = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        setSubmitCreateLoading(true);
-        try {
-            const response = await axiosClient.post(`/kategori`, {
-                kategori: createKategoriVal
-            });
-            if (response.data.success) {
-                toast.success('Berhasil menambahkan kategori')
-            }
-            queryClient.invalidateQueries({ queryKey: ['kategori'] });
-        } catch (error: any | AxiosError) {
-            toast.error(error.response.data.message);
-        } finally {
-            setSubmitCreateLoading(false);
-            setCreateFormModal(false);
-        }
+        setStoreLoading(true);
+        storeMutation.mutate();
     }
 
     if (error) return <p>Error loading data</p>;
@@ -218,7 +224,7 @@ const KategoriTable = () => {
                                 setPagination(prev => ({ ...prev, pageIndex: 0 }));
                             }} />
                     </div>
-                    <button onClick={() => setCreateFormModal(true)}>Tambah</button>
+                    <button onClick={() => setStoreModal(true)}>Tambah</button>
                 </div>
                 <div className='relative'>
                     {isFetching &&
@@ -288,41 +294,43 @@ const KategoriTable = () => {
                             />
                         </span>
                     </div>
-                    <div className='inline-flex gap-1'>
-                        <button
-                            className='inline-flex items-center justify-center'
-                            onClick={() => table.firstPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            <CevDLeftI className='size-5' />First
-                        </button>
-                        <button
-                            className='inline-flex items-center justify-center'
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
-                            <CevLeftI className='size-5' />Previous
-                        </button>
-                        <button
-                            className='inline-flex items-center justify-center'
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            <CevRightI className='size-5' />Next
-                        </button>
-                        <button
-                            className='inline-flex items-center justify-center'
-                            onClick={() => table.lastPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
-                            <CevDRightI className='size-5' />Last
-                        </button>
-                    </div>
+                    {table.getPageCount() > 1 &&
+                        <div className='inline-flex gap-1'>
+                            <button
+                                className='inline-flex items-center justify-center'
+                                onClick={() => table.firstPage()}
+                                disabled={!table.getCanPreviousPage()}
+                            >
+                                <CevDLeftI className='size-5' />First
+                            </button>
+                            <button
+                                className='inline-flex items-center justify-center'
+                                onClick={() => table.previousPage()}
+                                disabled={!table.getCanPreviousPage()}
+                            >
+                                <CevLeftI className='size-5' />Previous
+                            </button>
+                            <button
+                                className='inline-flex items-center justify-center'
+                                onClick={() => table.nextPage()}
+                                disabled={!table.getCanNextPage()}
+                            >
+                                <CevRightI className='size-5' />Next
+                            </button>
+                            <button
+                                className='inline-flex items-center justify-center'
+                                onClick={() => table.lastPage()}
+                                disabled={!table.getCanNextPage()}
+                            >
+                                <CevDRightI className='size-5' />Last
+                            </button>
+                        </div>
+                    }
                 </div>
             </div>
             {/* Modal */}
             {/* Edit Modal */}
-            <Dialog open={editFormModal} onClose={setEditFormModal} className="relative z-10">
+            <Dialog open={editModal} onClose={setEditModal} className="relative z-10">
                 <DialogBackdrop className="fixed inset-0 bg-gray-500/75 transition-opacity" />
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                     <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -339,8 +347,8 @@ const KategoriTable = () => {
                                             Kategori
                                         </label>
                                         <input
-                                            value={editKategoriVal}
-                                            onChange={(e) => setEditKategoriVal(e.target.value)}
+                                            value={updateValue}
+                                            onChange={(e) => setUpdateValue(e.target.value)}
                                             type="text"
                                             id="kategori"
                                             name="kategori"
@@ -357,15 +365,14 @@ const KategoriTable = () => {
                                     form='EditFormKategori'
                                     type="submit"
                                     className='bg-green-500'
-                                    // onClick={() => setEditFormModal(false)}
-                                    disabled={submitEditLoading}
+                                    disabled={updateLoading}
                                 >
-                                    {submitEditLoading ? 'Menyimpan...' : 'Simpan'}
+                                    {updateLoading ? 'Menyimpan...' : 'Simpan'}
                                 </button>
                                 <button
                                     type="button"
                                     className='bg-gray-500'
-                                    onClick={() => setEditFormModal(false)}
+                                    onClick={() => setEditModal(false)}
                                 >
                                     Batal
                                 </button>
@@ -375,7 +382,7 @@ const KategoriTable = () => {
                 </div>
             </Dialog>
             {/* Create Modal */}
-            <Dialog open={createFormModal} onClose={setCreateFormModal} className="relative z-10">
+            <Dialog open={storeModal} onClose={setStoreModal} className="relative z-10">
                 <DialogBackdrop className="fixed inset-0 bg-gray-500/75 transition-opacity" />
                 <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
                     <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
@@ -386,14 +393,14 @@ const KategoriTable = () => {
                                 </DialogTitle>
                             </div>
                             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                <form onSubmit={handleFormCreate} className="space-y-4" id='EditFormKategori'>
+                                <form onSubmit={handleFormCreate} className="space-y-4" id='StoreFormKategori'>
                                     <div className="flex flex-col">
                                         <label htmlFor="kategori" className="mb-1 text-sm font-medium text-gray-700">
                                             Kategori
                                         </label>
                                         <input
-                                            value={createKategoriVal}
-                                            onChange={(e) => setCreateKategoriVal(e.target.value)}
+                                            value={storeValue}
+                                            onChange={(e) => setStoreValue(e.target.value)}
                                             type="text"
                                             id="kategori"
                                             name="kategori"
@@ -407,18 +414,17 @@ const KategoriTable = () => {
                             {/* Tombol aksi */}
                             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6 gap-2">
                                 <button
-                                    form='EditFormKategori'
+                                    form='StoreFormKategori'
                                     type="submit"
                                     className='bg-green-500'
-                                    // onClick={() => setEditFormModal(false)}
-                                    disabled={submitCreateLoading}
+                                    disabled={storeLoading}
                                 >
-                                    {submitCreateLoading ? 'Menyimpan...' : 'Simpan'}
+                                    {storeLoading ? 'Menyimpan...' : 'Simpan'}
                                 </button>
                                 <button
                                     type="button"
                                     className='bg-gray-500'
-                                    onClick={() => setCreateFormModal(false)}
+                                    onClick={() => setStoreModal(false)}
                                 >
                                     Batal
                                 </button>
@@ -447,7 +453,7 @@ const KategoriTable = () => {
                                 <button
                                     type="button"
                                     className='bg-red-500'
-                                    onClick={() => handleDelete(selectedKtg!.id)}
+                                    onClick={() => handleDelete()}
                                     disabled={deleteLoading}
                                 >
                                     {deleteLoading ? 'Menghapus...' : 'Hapus'}
