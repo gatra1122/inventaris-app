@@ -1,0 +1,12 @@
+.loading-animation {
+  animation: loadingtext 0.7s infinite alternate;
+}
+
+@keyframes loadingtext {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.8);
+  }
+}

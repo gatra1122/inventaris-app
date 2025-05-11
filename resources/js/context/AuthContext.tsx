@@ -1,8 +1,11 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
-import axios from "axios";
+import axiosClient from "../utils/axios";
 import { UserType } from "../types";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { AxiosError } from "axios";
+import Loading from "../components/Loading";
 
 interface AuthContextType {
     authToken: string | undefined,
@@ -17,15 +20,19 @@ interface LoginResponse {
     status: boolean;
     message: string;
     token: string;
+    user: UserType;
 }
 interface RegisterResponse {
     status: boolean;
     message: string;
 }
+interface MeResponse {
+    status: boolean;
+    message: string;
+    user: UserType;
+}
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const API_URL = 'http://localhost:8000/api';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const navigate = useNavigate();
@@ -33,20 +40,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<UserType | null>(null);
     const [authToken, setAuthToken] = useState<string | undefined>(undefined);
 
+    const me = async () => {
+        setIsLoading(true);
+        try {
+            const response = await axiosClient.get<MeResponse>('/me');
+            setUser(response.data.user)
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsLoading(false);
+        }
+    }
+
     useEffect(() => {
         const token = Cookies.get('authToken');
         if (token) {
             setAuthToken(token);
+
+            if (!user) {
+                me();
+            }
+            navigate('/');
         } else {
-            navigate('login');
+            setAuthToken(undefined);
+            navigate('/login');
         }
     }, [])
-
 
     const login = async (email: string, password: string) => {
         setIsLoading(true);
         try {
-            const response = await axios.post<LoginResponse>(`${API_URL}/login`, {
+            const response = await axiosClient.post<LoginResponse>('/login', {
                 email,
                 password
             });
@@ -54,14 +78,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (response.data.status) {
                 Cookies.set('authToken', response.data.token, { expires: 1 });
                 setAuthToken(response.data.token);
-                console.log('Login berhasil')
+                setUser(response.data.user);
                 navigate('/');
-            } else {
-                console.log('Login gagal')
             }
-            console.log(response);
-        } catch (error) {
-
+        } catch (error: any | AxiosError) {
+            toast.error(error.response.data.message);
         } finally {
             setIsLoading(false);
         }
@@ -70,7 +91,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const register = async (name: string, email: string, password: string, password_confirmation: string) => {
         setIsLoading(true);
         try {
-            const response = await axios.post<RegisterResponse>(`${API_URL}/register`, {
+            const response = await axiosClient.post<RegisterResponse>('/register', {
                 name,
                 email,
                 password,
@@ -83,7 +104,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
             console.log(response);
         } catch (error) {
-
+            console.log(error);
         } finally {
             setIsLoading(false);
         }
@@ -92,15 +113,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const logout = async () => {
         setIsLoading(true);
         try {
-            await axios.post(`${API_URL}/logout`, {}, {
-                headers: {
-                    Authorization: `Bearer ${authToken}`
-                }
-            });
+            await axiosClient.post('/logout');
             setAuthToken(undefined);
             Cookies.remove('authToken');
         } catch (error) {
-
+            console.log(error);
         } finally {
             setIsLoading(false);
         }
@@ -108,7 +125,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     return (
         <AuthContext.Provider value={{ user, login, register, logout, isLoading, authToken }}>
-            {isLoading ? <h1>Loading...</h1> : children}
+            {isLoading ? <Loading /> : children}
         </AuthContext.Provider>
     );
 }

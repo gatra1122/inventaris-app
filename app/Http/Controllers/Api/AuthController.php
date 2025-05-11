@@ -33,8 +33,6 @@ class AuthController extends Controller
             'password' => bcrypt($data['password']),
         ]);
 
-        // $token = $user->createToken('main')->plainTextToken;
-        // return response(compact('user', 'token'));
         return response([
             'status' => true,
             'message' => 'Berhasil register'
@@ -51,8 +49,8 @@ class AuthController extends Controller
         if (!Auth::attempt($credentials)) {
             return response([
                 'status' => false,
-                'message' => 'Provided email or password is incorrect'
-            ]);
+                'message' => 'Email atau password salah !'
+            ], 400);
         }
 
         /** @var \App\Models\User $user */
@@ -60,8 +58,9 @@ class AuthController extends Controller
         $token = $user->createToken('myToken')->plainTextToken;
         return response([
             'status' => true,
-            'message' => 'User logged in',
-            'token' => $token
+            'message' => 'Berhasil masuk',
+            'token' => $token,
+            'user' => $user
         ]);
     }
 
@@ -82,7 +81,7 @@ class AuthController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'User logged out successfully'
+            'message' => 'Berhasil keluar'
         ]);
     }
 
