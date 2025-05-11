@@ -25,10 +25,7 @@ const EditFormKategori: React.FC<FormProps> = ({ id, kategoriVal, kategoriId }) 
         e.preventDefault();
         setLoading(true);
         try {
-            console.log(authToken)
-            const kat = formData.kategori;
             const response = await axiosClient.put(`/kategori/${kategoriId}`, formData);
-
             if (response.data.status) {
                 console.log('berhasil update')
             }

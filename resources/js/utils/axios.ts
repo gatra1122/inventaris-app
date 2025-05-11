@@ -6,10 +6,10 @@ const axiosClient = axios.create({
     //   withCredentials: true,
     //   withXSRFToken: true,
     timeout: 10000,
-    headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-    },
+    // headers: {
+    //     Accept: 'application/json',
+    //     'Content-Type': 'application/json',
+    // },
 });
 
 axiosClient.interceptors.request.use(

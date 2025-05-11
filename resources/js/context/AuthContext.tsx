@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AxiosError } from "axios";
 import Loading from "../components/Loading";
+import { useQuery } from "@tanstack/react-query";
 
 interface AuthContextType {
     authToken: string | undefined,
@@ -40,26 +41,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<UserType | null>(null);
     const [authToken, setAuthToken] = useState<string | undefined>(undefined);
 
-    const me = async () => {
-        setIsLoading(true);
-        try {
-            const response = await axiosClient.get<MeResponse>('/me');
-            setUser(response.data.user)
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setIsLoading(false);
-        }
-    }
+    const { data, error, isFetching } = useQuery({
+        queryKey: ['me'],
+        queryFn: () => {
+            return axiosClient.get('/me').then(response => {
+                setUser(response.data.user);
+                setIsLoading(false);
+            }).catch(error => {
+                throw error;
+            })
+        },
+        staleTime: 300000,
+        refetchOnWindowFocus: false,
+    });
 
     useEffect(() => {
         const token = Cookies.get('authToken');
         if (token) {
             setAuthToken(token);
-
-            if (!user) {
-                me();
-            }
         } else {
             setAuthToken(undefined);
             setIsLoading(false);

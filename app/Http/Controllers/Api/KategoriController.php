@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\DataMaster\Kategori;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreKategoriRequest;
@@ -36,7 +37,14 @@ class KategoriController extends Controller
      */
     public function store(StoreKategoriRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $kategori = Kategori::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data kategori berhasil ditambahkan.',
+            'data' => $kategori,
+        ]);
     }
 
     /**
@@ -53,19 +61,50 @@ class KategoriController extends Controller
      */
     public function update(UpdateKategoriRequest $request, string $id)
     {
-        // $this->authorize('update', $kategori);
         $kat = Kategori::findOrFail($id);
         $validated = $request->validated();
         $kat->update($validated);
 
-        return response()->json($kat);
+        return response()->json([
+            'success' => true,
+            'message' => 'Data kategori berhasil diubah.',
+            'data' => $kat,
+        ]);
     }
+
+    // public function update(Request $request, string $id)
+    // {
+    //     $kat = Kategori::findOrFail($id);
+
+    //     if ($request->has('kategori')) {
+    //         $kat->kategori = $request->input('kategori');
+    //         $kat->save();
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Data kategori berhasil diubah.',
+    //             'data' => $kat,
+    //         ]);
+    //     } else {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Field "kategori" tidak ditemukan dalam request.',
+    //         ], 400);
+    //     }
+    // }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Kategori $kategori)
+    public function destroy(string $id)
     {
-        //
+        $kat = Kategori::findOrFail($id);
+        $kat->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data kategori berhasil dihapus.',
+        ]);
     }
 }
