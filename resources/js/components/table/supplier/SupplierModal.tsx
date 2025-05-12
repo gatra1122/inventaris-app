@@ -13,14 +13,6 @@ interface formDataType {
     deskripsi: string;
 }
 
-interface postErrorsMsg {
-    supplier: string;
-    alamat: string;
-    kontak: string;
-    email: string;
-    deskripsi: string;
-}
-
 type BaseModalProps = {
     state: boolean;
     selectedData: SupplierType | null;
@@ -50,9 +42,9 @@ type CreateUpdateProps = BaseModalProps & {
 
 type ModalProps = DeleteModalProps | CreateUpdateProps | ReadProps;
 
-const CRUDModal = ({ state, selectedData, formData, type, onClose, formInputChange }: ModalProps) => {
+const SupplierModal = ({ state, selectedData, formData, type, onClose, formInputChange }: ModalProps) => {
     const queryClient = useQueryClient();
-    const [errorMsg, setErrorMsg] = useState<postErrorsMsg | null>(null);
+    const [errorMsg, setErrorMsg] = useState<formDataType | null>(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -264,4 +256,4 @@ const CRUDModal = ({ state, selectedData, formData, type, onClose, formInputChan
     )
 }
 
-export default CRUDModal
+export default SupplierModal

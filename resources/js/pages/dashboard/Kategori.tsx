@@ -1,4 +1,4 @@
-import KategoriTable from "../../components/table/KategoriTable"
+import KategoriTable from "../../components/table/kategori/KategoriTable"
 
 const Kategori = () => {
     return (
