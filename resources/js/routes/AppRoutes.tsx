@@ -9,6 +9,7 @@ import AuthLayout from '../layouts/AuthLayout';
 import NotFound from '../pages/NotFound';
 import Kategori from '../pages/dashboard/Kategori';
 import Supplier from '../pages/dashboard/Supplier';
+import Barang from '../pages/dashboard/Barang';
 
 const AppRoutes = () => {
     return (
@@ -19,6 +20,7 @@ const AppRoutes = () => {
                 <Route path="user" element={<User />} />
                 <Route path="kategori" element={<Kategori />} />
                 <Route path="supplier" element={<Supplier />} />
+                <Route path="barang" element={<Barang />} />
             </Route>
 
             {/* Layout Auth */}
