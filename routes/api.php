@@ -40,14 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
     //     Route::delete('users/{id}', 'destroy');
     // });
 
-    // Barang routes
-    // Route::controller(Barang::class)->group(function () {
-    //     Route::get('barang', 'index');
-    //     Route::get('barang/{id}', 'show');
-    //     Route::put('barang/{id}', 'update');
-    //     Route::delete('barang/{id}', 'destroy');
-    // });
-
     // Kategori routes
     Route::controller(Kategori::class)->group(function () {
         Route::get('kategori', 'index');
@@ -63,5 +55,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('supplier', 'store');
         Route::put('supplier/{id}', 'update');
         Route::delete('supplier/{id}', 'destroy');
+    });
+    // Barang routes
+    Route::controller(Barang::class)->group(function () {
+        Route::get('barang', 'index');
+        Route::get('barang/{id}', 'show');
+        Route::post('barang', 'store');
+        Route::put('barang/{id}', 'update');
+        Route::delete('barang/{id}', 'destroy');
     });
 });

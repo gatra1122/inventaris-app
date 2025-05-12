@@ -1,4 +1,4 @@
-import BarangTable from "../../components/table/BarangTable"
+import BarangTable from "../../components/table/barang/BarangTable"
 
 const Barang = () => {
     return (

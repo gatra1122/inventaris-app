@@ -29,19 +29,18 @@ class BarangPolicy
      */
     public function create(User $user): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat menambah barang.');
     }
-
     /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, Barang $barang): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat mengubah data barang.');
     }
 
     /**
@@ -49,9 +48,9 @@ class BarangPolicy
      */
     public function delete(User $user, Barang $barang): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat menghapus barang.');
     }
 
     /**
@@ -59,9 +58,9 @@ class BarangPolicy
      */
     public function restore(User $user, Barang $barang): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat memulihkan barang.');
     }
 
     /**
@@ -69,8 +68,8 @@ class BarangPolicy
      */
     public function forceDelete(User $user, Barang $barang): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat menghapus barang secara permanen.');
     }
 }

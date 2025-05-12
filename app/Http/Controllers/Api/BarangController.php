@@ -6,62 +6,130 @@ use App\Http\Controllers\Controller;
 use App\Models\DataMaster\Barang;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class BarangController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-    }
+        $page = (int) $request->query('page', 1);
+        $perPage = (int) $request->query('per_page', 10);
+        $search = $request->query('search');
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $query = Barang::query()
+            ->when($search, fn($q) => $q->where('barang', 'ILIKE', "%{$search}%"))
+            ->orderByDesc('updated_at');
+        $data = $query->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Semua data barang berhasil diambil.',
+            'data' => $data,
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Barang $barang)
     {
-        //
+        Gate::authorize('create', $barang);
+
+        $tanggal = Carbon::now();
+        $tahun = $tanggal->format('Y');
+        $bulan = $tanggal->format('m');
+
+        $namaSingkat = Str::upper(Str::substr($request->nama, 0, 3));
+        $kode_barang = sprintf(
+            'K%dS%d%s%s%s',
+            $request->kategori_id,
+            $request->supplier_id,
+            $namaSingkat,
+            $tahun,
+            $bulan
+        );
+        $validated = $request->validate([
+            'nama' => 'required|string|max:255',
+            'kategori_id' => 'required|numeric',
+            'supplier_id' => 'required|numeric',
+            'merk' => 'required|nullable|string|max:255',
+            'spesifikasi' => 'required|nullable|string|max:255',
+            'satuan' => 'required|string|max:255',
+            'stok' => 'required|numeric',
+            'stok_minimum' => 'required|numeric',
+            'gambar' => 'required|nullable|string',
+        ]);
+        $validated['kode'] = $kode_barang;
+        $data = Barang::create($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data barang berhasil ditambahkan.',
+            'data' => $data,
+        ]);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Barang $barang)
+    public function show(string $id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Barang $barang)
-    {
-        //
+        $data = Barang::findOrFail($id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Data barang berhasil diambil.',
+            'data' => $data,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Barang $barang)
+    public function update(Request $request, Barang $barang, string $id)
     {
-        //
+        Gate::authorize('update', $barang);
+
+        $data = Barang::findOrFail($id);
+
+        $validated = $request->validate([
+            'kode' => 'required|string',
+            'nama' => 'required|string|max:255',
+            'kategori_id' => 'required|numeric',
+            'supplier_id' => 'required|numeric',
+            'merk' => 'required|nullable|string|max:255',
+            'spesifikasi' => 'required|nullable|string|max:255',
+            'satuan' => 'required|string|max:255',
+            'stok' => 'required|numeric',
+            'stok_minimum' => 'required|numeric',
+            'gambar' => 'required|nullable|string',
+        ]);
+
+        $data->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data barang berhasil diubah.',
+            'data' => $data,
+        ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Barang $barang)
+    public function destroy(Barang $barang, string $id)
     {
-        //
+        Gate::authorize('delete', $barang);
+
+        $data = Barang::findOrFail($id);
+        $data->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data barang berhasil dihapus.',
+        ]);
     }
 }
