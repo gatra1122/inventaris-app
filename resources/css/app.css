@@ -103,3 +103,7 @@
     background-color: transparent;
     color: var(--foreground);
 }
+
+.active-link{
+    background-color: var(--color-gray-200);
+}

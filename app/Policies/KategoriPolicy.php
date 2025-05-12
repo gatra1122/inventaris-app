@@ -29,19 +29,18 @@ class KategoriPolicy
      */
     public function create(User $user): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat membuat Kategori.');
     }
-
     /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, Kategori $kategori): Response
     {
-        return $user->role === 'user'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat mengubah data Kategori.');
     }
 
     /**
@@ -49,9 +48,9 @@ class KategoriPolicy
      */
     public function delete(User $user, Kategori $kategori): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat menghapus Kategori.');
     }
 
     /**
@@ -59,9 +58,9 @@ class KategoriPolicy
      */
     public function restore(User $user, Kategori $kategori): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat memulihkan Kategori.');
     }
 
     /**
@@ -69,8 +68,8 @@ class KategoriPolicy
      */
     public function forceDelete(User $user, Kategori $kategori): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat menghapus Kategori secara permanen.');
     }
 }

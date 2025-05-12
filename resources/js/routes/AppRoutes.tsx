@@ -8,6 +8,7 @@ import DashboardLayout from '../layouts/DashboardLayout';
 import AuthLayout from '../layouts/AuthLayout';
 import NotFound from '../pages/NotFound';
 import Kategori from '../pages/dashboard/Kategori';
+import Supplier from '../pages/dashboard/Supplier';
 
 const AppRoutes = () => {
     return (
@@ -17,6 +18,7 @@ const AppRoutes = () => {
                 <Route index element={<Dashboard />} />
                 <Route path="user" element={<User />} />
                 <Route path="kategori" element={<Kategori />} />
+                <Route path="supplier" element={<Supplier />} />
             </Route>
 
             {/* Layout Auth */}

@@ -4,6 +4,7 @@ use App\Http\Controllers\API\AuthController as Auth;
 use App\Http\Controllers\Api\UsersController as Users;
 use App\Http\Controllers\Api\BarangController as Barang;
 use App\Http\Controllers\Api\KategoriController  as Kategori;
+use App\Http\Controllers\Api\SupplierController as Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -54,5 +55,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('kategori', 'store');
         Route::put('kategori/{id}', 'update');
         Route::delete('kategori/{id}', 'destroy');
+    });
+    // Supplier routes
+    Route::controller(Supplier::class)->group(function () {
+        Route::get('supplier', 'index');
+        Route::get('supplier/{id}', 'show');
+        Route::post('supplier', 'store');
+        Route::put('supplier/{id}', 'update');
+        Route::delete('supplier/{id}', 'destroy');
     });
 });

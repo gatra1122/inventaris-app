@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Models\DataMaster\Supplier;
-use App\Http\Requests\StoreSupplierRequest;
-use App\Http\Requests\UpdateSupplierRequest;
+use App\Http\Controllers\Controller;
+use App\Models\DataMaster\Barang;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
-class SupplierController extends Controller
+class BarangController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +28,7 @@ class SupplierController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreSupplierRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -35,7 +36,7 @@ class SupplierController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Supplier $supplier)
+    public function show(Barang $barang)
     {
         //
     }
@@ -43,7 +44,7 @@ class SupplierController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Supplier $supplier)
+    public function edit(Barang $barang)
     {
         //
     }
@@ -51,7 +52,7 @@ class SupplierController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateSupplierRequest $request, Supplier $supplier)
+    public function update(Request $request, Barang $barang)
     {
         //
     }
@@ -59,7 +60,7 @@ class SupplierController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Supplier $supplier)
+    public function destroy(Barang $barang)
     {
         //
     }

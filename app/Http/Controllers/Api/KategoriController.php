@@ -3,11 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\DestroyKategoriRequest;
 use App\Models\DataMaster\Kategori;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreKategoriRequest;
-use App\Http\Requests\UpdateKategoriRequest;
 use Illuminate\Support\Facades\Gate;
 
 class KategoriController extends Controller
@@ -24,27 +21,31 @@ class KategoriController extends Controller
         $query = Kategori::query()
             ->when($search, fn($q) => $q->where('kategori', 'ILIKE', "%{$search}%"))
             ->orderByDesc('updated_at');
-        $kategori = $query->paginate($perPage, ['*'], 'page', $page);
+        $data = $query->paginate($perPage, ['*'], 'page', $page);
 
         return response()->json([
             'success' => true,
-            'message' => 'Data kategori berhasil diambil.',
-            'data' => $kategori,
+            'message' => 'Semua data kategori berhasil diambil.',
+            'data' => $data,
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreKategoriRequest $request)
+    public function store(Request $request, Kategori $kategori)
     {
-        $validated = $request->validated();
-        $kategori = Kategori::create($validated);
+        Gate::authorize('create', $kategori);
+
+        $validated = $request->validate([
+            'kategori' => 'required|string',
+        ]);
+        $data = Kategori::create($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Data kategori berhasil ditambahkan.',
-            'data' => $kategori,
+            'data' => $data,
         ]);
     }
 
@@ -53,53 +54,43 @@ class KategoriController extends Controller
      */
     public function show(string $id)
     {
-        $kat = Kategori::findOrFail($id);
-        return response()->json($kat);
+        $data = Kategori::findOrFail($id);
+        return response()->json([
+            'success' => true,
+            'message' => 'Data kategori berhasil diambil.',
+            'data' => $data,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateKategoriRequest $request, string $id)
+    public function update(Request $request, Kategori $kategori, string $id)
     {
-        $kat = Kategori::findOrFail($id);
-        $validated = $request->validated();
-        $kat->update($validated);
+        Gate::authorize('update', $kategori);
+
+        $data = Kategori::findOrFail($id);
+
+        $validated = $request->validate([
+            'kategori' => 'required|string',
+        ]);
+
+        $data->update($validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Data kategori berhasil diubah.',
-            'data' => $kat,
+            'data' => $data,
         ]);
     }
-
-    // public function update(Request $request, string $id)
-    // {
-    //     $kat = Kategori::findOrFail($id);
-
-    //     if ($request->has('kategori')) {
-    //         $kat->kategori = $request->input('kategori');
-    //         $kat->save();
-
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Data kategori berhasil diubah.',
-    //             'data' => $kat,
-    //         ]);
-    //     } else {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Field "kategori" tidak ditemukan dalam request.',
-    //         ], 400);
-    //     }
-    // }
-
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(DestroyKategoriRequest $request, string $id)
+    public function destroy(Kategori $kategori, string $id)
     {
+        Gate::authorize('delete', $kategori);
+
         $kat = Kategori::findOrFail($id);
         $kat->delete();
 

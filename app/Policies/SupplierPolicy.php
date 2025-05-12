@@ -29,19 +29,18 @@ class SupplierPolicy
      */
     public function create(User $user): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat membuat Supplier.');
     }
-
     /**
      * Determine whether the user can update the model.
      */
     public function update(User $user, Supplier $supplier): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat mengubah data Supplier.');
     }
 
     /**
@@ -49,9 +48,9 @@ class SupplierPolicy
      */
     public function delete(User $user, Supplier $supplier): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat menghapus Supplier.');
     }
 
     /**
@@ -59,9 +58,9 @@ class SupplierPolicy
      */
     public function restore(User $user, Supplier $supplier): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat memulihkan Supplier.');
     }
 
     /**
@@ -69,8 +68,8 @@ class SupplierPolicy
      */
     public function forceDelete(User $user, Supplier $supplier): Response
     {
-        return $user->role === 'admin'
+        return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Hanya admin yang dapat mengakses.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat menghapus Supplier secara permanen.');
     }
 }
