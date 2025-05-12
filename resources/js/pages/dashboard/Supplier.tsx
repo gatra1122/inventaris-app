@@ -1,4 +1,4 @@
-import SupplierTable from '../../components/table/SupplierTable'
+import SupplierTable from '../../components/table/supplier/SupplierTable'
 
 const Supplier = () => {
   return (

@@ -31,7 +31,7 @@ class SupplierPolicy
     {
         return $user->isAdmin()
             ? Response::allow()
-            : Response::deny('Akses ditolak: hanya admin yang dapat membuat Supplier.');
+            : Response::deny('Akses ditolak: hanya admin yang dapat menambah Supplier.');
     }
     /**
      * Determine whether the user can update the model.
