@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\DataMaster\Barang;
+use App\Models\DataMaster\Kategori;
+use App\Models\DataMaster\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Carbon\Carbon;
@@ -21,7 +23,7 @@ class BarangController extends Controller
         $search = $request->query('search');
 
         $query = Barang::query()
-            ->when($search, fn($q) => $q->where('barang', 'ILIKE', "%{$search}%"))
+            ->when($search, fn($q) => $q->where('nama', 'ILIKE', "%{$search}%"))
             ->orderByDesc('updated_at');
         $data = $query->paginate($perPage, ['*'], 'page', $page);
 
@@ -42,15 +44,17 @@ class BarangController extends Controller
         $tanggal = Carbon::now();
         $tahun = $tanggal->format('Y');
         $bulan = $tanggal->format('m');
+        $waktu = $tanggal->format('Hi');
 
         $namaSingkat = Str::upper(Str::substr($request->nama, 0, 3));
         $kode_barang = sprintf(
-            'K%dS%d%s%s%s',
+            'K%dS%d%s%s%s%s',
             $request->kategori_id,
             $request->supplier_id,
             $namaSingkat,
             $tahun,
-            $bulan
+            $bulan,
+            $waktu
         );
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
@@ -61,7 +65,7 @@ class BarangController extends Controller
             'satuan' => 'required|string|max:255',
             'stok' => 'required|numeric',
             'stok_minimum' => 'required|numeric',
-            'gambar' => 'required|nullable|string',
+            'gambar' => 'nullable|string',
         ]);
         $validated['kode'] = $kode_barang;
         $data = Barang::create($validated);
@@ -69,6 +73,25 @@ class BarangController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Data barang berhasil ditambahkan.',
+            'data' => $data,
+        ]);
+    }
+
+    public function listKategori()
+    {
+        $data = Kategori::select('id', 'kategori')->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Daftar kategori berhasil diambil.',
+            'data' => $data,
+        ]);
+    }
+    public function listSupplier()
+    {
+        $data = Supplier::select('id', 'supplier')->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'Daftar supplier berhasil diambil.',
             'data' => $data,
         ]);
     }

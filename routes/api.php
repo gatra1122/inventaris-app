@@ -59,6 +59,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // Barang routes
     Route::controller(Barang::class)->group(function () {
         Route::get('barang', 'index');
+        Route::get('barang/listkategori', 'listKategori');
+        Route::get('barang/listsupplier', 'listSupplier');
         Route::get('barang/{id}', 'show');
         Route::post('barang', 'store');
         Route::put('barang/{id}', 'update');

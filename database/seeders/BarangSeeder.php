@@ -3,14 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\DataMaster\Barang;
-use App\Models\DataMaster\BarangModel;
 use App\Models\DataMaster\Kategori;
-use App\Models\DataMaster\KategoriModel;
 use App\Models\DataMaster\Supplier;
-use App\Models\DataMaster\SupplierModel;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
 
 class BarangSeeder extends Seeder
 {
@@ -22,10 +20,13 @@ class BarangSeeder extends Seeder
         $faker = Faker::create();
 
         for ($i = 0; $i < 200; $i++) {
-            $tanggal = $faker->dateTimeBetween('-60 days', 'now');
-            $tanggalUpdate = $faker->dateTimeBetween($tanggal, '+10 days');
+            $now = Carbon::now();
+            $enamPuluhHariLalu = $now->copy()->subDays(60);
+            $tanggal = $faker->dateTimeBetween($enamPuluhHariLalu, $now);
+            $tanggalUpdate = $faker->dateTimeBetween($tanggal, $now);
             $tahun = $tanggal->format('Y');
             $bulan = $tanggal->format('m');
+            $waktu = $tanggal->format('Hi');
 
             $kategori = Kategori::inRandomOrder()->first()->id;
             $supplier = Supplier::inRandomOrder()->first()->id;
@@ -35,9 +36,18 @@ class BarangSeeder extends Seeder
                 ($faker->word . ' ' . $faker->word . ' ' . $faker->word),
             ]);
 
-            $kode_barang = sprintf('K%dS%d%02d%s%s', $kategori, $supplier, $i + 1, $tahun, $bulan);
+            $namaSingkat = Str::upper(Str::substr($nama, 0, 3));
+            $kode_barang = sprintf(
+                'K%dS%d%s%s%s%s',
+                $kategori,
+                $supplier,
+                $namaSingkat,
+                $tahun,
+                $bulan,
+                $waktu
+            );
 
-            $stok = random_int(1,20);
+            $stok = random_int(1, 20);
             $stok_min = random_int(1, $stok);
 
             Barang::create([

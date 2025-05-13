@@ -131,72 +131,72 @@ const BarangTable = () => {
     getCoreRowModel: getCoreRowModel(),
   })
 
-  const [formData, setFormData] = useState<formDataType>({
-    gambar: '',
-    kategori_id: 1,
-    kode: '',
-    merk: '',
-    nama: '',
-    satuan: '',
-    spesifikasi: '',
-    stok: 1,
-    stok_minimum: 1,
-    supplier_id: 1,
-  })
-  const formInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  }
-  const resetForm = () => {
-    setFormData({
-      gambar: '',
-      kategori_id: 1,
-      kode: '',
-      merk: '',
-      nama: '',
-      satuan: '',
-      spesifikasi: '',
-      stok: 1,
-      stok_minimum: 1,
-      supplier_id: 1,
-    });
-  };
-  const fillForm = () => {
-    setFormData({
-      gambar: selectedData?.gambar || '',
-      kategori_id: selectedData?.kategori_id || 1,
-      kode: selectedData?.kode || '',
-      merk: selectedData?.merk || '',
-      nama: selectedData?.nama || '',
-      satuan: selectedData?.satuan || '',
-      spesifikasi: selectedData?.spesifikasi || '',
-      stok: selectedData?.stok || 1,
-      stok_minimum: selectedData?.stok_minimum || 1,
-      supplier_id: selectedData?.supplier_id || 1,
-    });
-  };
+  // const [formData, setFormData] = useState<formDataType>({
+  //   gambar: '',
+  //   kategori_id: 1,
+  //   kode: '',
+  //   merk: '',
+  //   nama: '',
+  //   satuan: '',
+  //   spesifikasi: '',
+  //   stok: 1,
+  //   stok_minimum: 1,
+  //   supplier_id: 1,
+  // })
+  // const formInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>) => {
+  //   setFormData({
+  //     ...formData,
+  //     [e.target.name]: e.target.value
+  //   });
+  // }
+  // const resetForm = () => {
+  //   setFormData({
+  //     gambar: '',
+  //     kategori_id: 1,
+  //     kode: '',
+  //     merk: '',
+  //     nama: '',
+  //     satuan: '',
+  //     spesifikasi: '',
+  //     stok: 1,
+  //     stok_minimum: 1,
+  //     supplier_id: 1,
+  //   });
+  // };
+  // const fillForm = () => {
+  //   setFormData({
+  //     gambar: selectedData?.gambar || '',
+  //     kategori_id: selectedData?.kategori_id || 1,
+  //     kode: selectedData?.kode || '',
+  //     merk: selectedData?.merk || '',
+  //     nama: selectedData?.nama || '',
+  //     satuan: selectedData?.satuan || '',
+  //     spesifikasi: selectedData?.spesifikasi || '',
+  //     stok: selectedData?.stok || 1,
+  //     stok_minimum: selectedData?.stok_minimum || 1,
+  //     supplier_id: selectedData?.supplier_id || 1,
+  //   });
+  // };
 
-  useEffect(() => {
-    if (updateModal) {
-      fillForm();
-    } else {
-      resetForm();
-    }
-  }, [updateModal]);
-  useEffect(() => {
-    if (postModal) {
-      resetForm();
-    }
-  }, [postModal]);
-  useEffect(() => {
-    if (detailsModal) {
-      fillForm();
-    } else {
-      resetForm();
-    }
-  }, [detailsModal]);
+  // useEffect(() => {
+  //   if (updateModal) {
+  //     fillForm();
+  //   } else {
+  //     resetForm();
+  //   }
+  // }, [updateModal]);
+  // useEffect(() => {
+  //   if (postModal) {
+  //     resetForm();
+  //   }
+  // }, [postModal]);
+  // useEffect(() => {
+  //   if (detailsModal) {
+  //     fillForm();
+  //   } else {
+  //     resetForm();
+  //   }
+  // }, [detailsModal]);
 
   return (
     <>
@@ -262,9 +262,9 @@ const BarangTable = () => {
       <PaginationControls table={table} />
 
       {/* Modal */}
-      <BarangModal state={detailsModal} type='read' formData={formData} onClose={() => setDetailsModal(false)} selectedData={selectedData} />
-      <BarangModal state={postModal} type='create' formData={formData} onClose={() => setPostModal(false)} formInputChange={formInputChange} selectedData={selectedData} />
-      <BarangModal state={updateModal} type='update' formData={formData} onClose={() => setUpdateModal(false)} formInputChange={formInputChange} selectedData={selectedData} />
+      <BarangModal state={detailsModal} type='read' onClose={() => setDetailsModal(false)} selectedData={selectedData} />
+      <BarangModal state={postModal} type='create' onClose={() => setPostModal(false)} selectedData={selectedData} />
+      <BarangModal state={updateModal} type='update' onClose={() => setUpdateModal(false)} selectedData={selectedData} />
       <BarangModal state={deleteModal} type='delete' onClose={() => setDeleteModal(false)} selectedData={selectedData} />
     </>
   )
