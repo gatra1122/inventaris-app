@@ -23,8 +23,14 @@ class BarangController extends Controller
         $search = $request->query('search');
 
         $query = Barang::query()
-            ->when($search, fn($q) => $q->where('nama', 'ILIKE', "%{$search}%"))
+            ->when($search, function ($q) use ($search) {
+                $q->where(function ($q) use ($search) {
+                    $q->where('nama', 'ILIKE', "%{$search}%")
+                        ->orWhere('kode', 'ILIKE', "%{$search}%");
+                });
+            })
             ->orderByDesc('updated_at');
+
         $data = $query->paginate($perPage, ['*'], 'page', $page);
 
         return response()->json([
@@ -33,6 +39,7 @@ class BarangController extends Controller
             'data' => $data,
         ]);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -128,7 +135,7 @@ class BarangController extends Controller
             'satuan' => 'required|string|max:255',
             'stok' => 'required|numeric',
             'stok_minimum' => 'required|numeric',
-            'gambar' => 'required|nullable|string',
+            'gambar' => 'nullable|string',
         ]);
 
         $data->update($validated);

@@ -54,7 +54,7 @@ const SupplierTable = () => {
                 throw error;
             })
         },
-        staleTime: 300000,
+        staleTime: 1000 * 60 * 5,
         placeholderData: (prev) => prev
     });
 

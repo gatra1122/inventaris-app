@@ -4,17 +4,13 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/re
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import axiosClient from '../../../utils/axios';
-
-interface listKategoriType {
-    id: number;
-    kategori: string;
-}
+import SelectOptions from './SelectOptions';
 
 interface formDataType {
     kode: string;
     nama: string;
-    kategori_id: number;
-    supplier_id: number;
+    kategori_id: string;
+    supplier_id: string;
     merk: string;
     spesifikasi: string;
     satuan: string;
@@ -35,34 +31,9 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
     const [errorMsg, setErrorMsg] = useState<formDataType | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const { data: listKategori } = useQuery({
-        queryKey: ['list_kategori'],
-        queryFn: () => {
-            return axiosClient.get('/barang/listkategori').then(response => {
-                return response.data.data;
-            }).catch(error => {
-                throw error;
-            })
-        },
-        staleTime: 300000,
-        refetchOnMount: true
-    });
-    const { data: listSupplier } = useQuery({
-        queryKey: ['list_supplier'],
-        queryFn: () => {
-            return axiosClient.get('/barang/listsupplier').then(response => {
-                return response.data.data;
-            }).catch(error => {
-                throw error;
-            })
-        },
-        staleTime: 300000,
-        refetchOnMount: true
-    });
-
     const [formData, setFormData] = useState<formDataType>({
         gambar: '',
-        kategori_id: 1,
+        kategori_id: '',
         kode: '',
         merk: '',
         nama: '',
@@ -70,7 +41,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
         spesifikasi: '',
         stok: 1,
         stok_minimum: 1,
-        supplier_id: 1,
+        supplier_id: '',
     })
     const formInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>) => {
         setFormData({
@@ -81,7 +52,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
     const resetForm = () => {
         setFormData({
             gambar: '',
-            kategori_id: 0,
+            kategori_id: '',
             kode: '',
             merk: '',
             nama: '',
@@ -89,13 +60,13 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
             spesifikasi: '',
             stok: 1,
             stok_minimum: 1,
-            supplier_id: 0,
+            supplier_id: '',
         });
     };
     const fillForm = () => {
         setFormData({
             gambar: selectedData?.gambar || '',
-            kategori_id: selectedData?.kategori_id || 1,
+            kategori_id: selectedData?.kategori_id || '',
             kode: selectedData?.kode || '',
             merk: selectedData?.merk || '',
             nama: selectedData?.nama || '',
@@ -103,7 +74,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
             spesifikasi: selectedData?.spesifikasi || '',
             stok: selectedData?.stok || 1,
             stok_minimum: selectedData?.stok_minimum || 1,
-            supplier_id: selectedData?.supplier_id || 1,
+            supplier_id: selectedData?.supplier_id || '',
         });
     };
 
@@ -191,6 +162,15 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
         }
     }, [state])
 
+    useEffect(() => {
+        if (formData.stok_minimum > formData.stok) {
+            setFormData(prevData => ({
+                ...prevData,
+                stok: prevData.stok_minimum,
+            }));
+        }
+    }, [formData.stok_minimum]);
+
     return (
         <>
             <Dialog open={state} onClose={onClose} className="relative z-10">
@@ -218,7 +198,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                                 value={formData?.nama}
                                                 type="text"
                                                 id="nama"
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
                                                 placeholder="Nama barang..."
                                                 disabled={type === 'read'}
                                             />
@@ -226,40 +206,12 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                         </div>
                                         <div>
                                             <label className="block text-gray-700 mb-1" htmlFor="kategori_id">Kategori</label>
-                                            <select
-                                                name='kategori_id'
-                                                onChange={formInputChange}
-                                                value={formData?.kategori_id}
-                                                id="kategori_id"
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500"
-                                                disabled={type === 'read'}
-                                            >
-                                                <option value="">Pilih kategori...</option>
-                                                {listKategori?.map((item: any) => (
-                                                    <option key={item.id} value={item.id}>
-                                                        {item.kategori}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                            <SelectOptions formData={formData} formInputChange={formInputChange} isDisabled={type === 'read'} selectType='kategori' />
                                             {errorMsg && <span className='text-red-500'>{errorMsg?.kategori_id}</span>}
                                         </div>
                                         <div>
                                             <label className="block text-gray-700 mb-1" htmlFor="supplier_id">Supplier</label>
-                                            <select
-                                                name='supplier_id'
-                                                onChange={formInputChange}
-                                                value={formData?.supplier_id}
-                                                id="supplier_id"
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500"
-                                                disabled={type === 'read'}
-                                            >
-                                                <option value="">Pilih supplier...</option>
-                                                {listSupplier?.map((item: any) => (
-                                                    <option key={item.id} value={item.id}>
-                                                        {item.supplier}
-                                                    </option>
-                                                ))}
-                                            </select>
+                                            <SelectOptions formData={formData} formInputChange={formInputChange} isDisabled={type === 'read'} selectType='supplier' />
                                             {errorMsg && <span className='text-red-500'>{errorMsg?.supplier_id}</span>}
                                         </div>
                                         <div>
@@ -270,7 +222,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                                 value={formData?.merk}
                                                 type="text"
                                                 id="merk"
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
                                                 placeholder="Merk barang..."
                                                 disabled={type === 'read'}
                                             />
@@ -285,8 +237,9 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                                     value={formData?.stok}
                                                     type="number"
                                                     id="stok"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
                                                     disabled={type === 'read'}
+                                                    min={1}
                                                 />
                                                 {errorMsg && <span className='text-red-500'>{errorMsg?.stok}</span>}
                                             </div>
@@ -298,8 +251,9 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                                     value={formData?.stok_minimum}
                                                     type="number"
                                                     id="stok_minimum"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
                                                     disabled={type === 'read'}
+                                                    min={1}
                                                 />
                                                 {errorMsg && <span className='text-red-500'>{errorMsg?.stok_minimum}</span>}
                                             </div>
@@ -310,7 +264,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                                     onChange={formInputChange}
                                                     value={formData?.satuan}
                                                     id="satuan"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500"
+                                                    className="w-full px-4 py-2 border border-gray-300 rounded-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
                                                     disabled={type === 'read'}
                                                 >
                                                     <option value="">Pilih satuan...</option>
@@ -328,7 +282,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                                 onChange={formInputChange}
                                                 value={formData?.spesifikasi}
                                                 id="spesifikasi"
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500"
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
                                                 placeholder="Spesifikasi tambahan..."
                                                 rows={4}
                                                 disabled={type === 'read'}

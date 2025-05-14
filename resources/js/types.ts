@@ -14,8 +14,8 @@ export type BarangType = {
   id: number;
   kode: string;
   nama: string;
-  kategori_id: number;
-  supplier_id: number;
+  kategori_id: string;
+  supplier_id: string;
   supplier: string;
   kategori: string;
   merk: string;

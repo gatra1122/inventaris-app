@@ -18,6 +18,7 @@ import { toast } from 'react-toastify';
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import PaginationControls from '../PaginationControls';
 import KategoriModal from './KategoriModal';
+import ControlPagination from '../ControlPagination';
 
 interface formDataType {
     kategori: string;
@@ -53,7 +54,7 @@ const KategoriTable = () => {
                 throw error;
             })
         },
-        staleTime: 300000,
+        staleTime: 1000 * 60 * 5,
         placeholderData: (prev) => prev
     });
 
@@ -218,7 +219,8 @@ const KategoriTable = () => {
                 </div>
             </div>
             {/* Paginasi */}
-            <PaginationControls table={table} />
+            {/* <PaginationControls table={table} /> */}
+            <ControlPagination table={table} />
 
             {/* Modal */}
             <KategoriModal state={postModal} type='create' formData={formData} onClose={() => setPostModal(false)} formInputChange={formInputChange} selectedData={selectedData} />
