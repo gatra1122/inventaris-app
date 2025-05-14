@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { SupplierType } from '../../../types'
+import { SupplierType, UserType } from '../../../types'
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import axiosClient from '../../../utils/axios';
+import SelectGeneric from '../SelectGeneric';
 
 interface formDataType {
-    supplier: string;
-    alamat: string;
-    kontak: string;
+    name: string;
     email: string;
-    deskripsi: string;
+    role: string;
+    password: string;
+    password_confirmation: string;
 }
 
 type BaseModalProps = {
     state: boolean;
-    selectedData: SupplierType | null;
+    selectedData: UserType | null;
     onClose: () => void;
     formInputChange?: (
         e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
@@ -36,16 +37,26 @@ type CreateUpdateProps = BaseModalProps & {
     type: 'create' | 'update';
     formData: formDataType;
     formInputChange: (
-        e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>
+        e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>
     ) => void;
 };
 
 type ModalProps = DeleteModalProps | CreateUpdateProps | ReadProps;
 
-const SupplierModal = ({ state, selectedData, formData, type, onClose, formInputChange }: ModalProps) => {
+interface OptionType {
+  value: string;
+  label: string;
+}
+
+const UserModal = ({ state, selectedData, formData, type, onClose, formInputChange }: ModalProps) => {
     const queryClient = useQueryClient();
     const [errorMsg, setErrorMsg] = useState<formDataType | null>(null);
     const [loading, setLoading] = useState(false);
+
+    const roleOptions: OptionType[] = [
+        { value: 'admin', label: 'Admin' },
+        { value: 'user', label: 'User' },
+    ];
 
     useEffect(() => {
         if (!state) {
@@ -55,13 +66,13 @@ const SupplierModal = ({ state, selectedData, formData, type, onClose, formInput
 
     const postMutation = useMutation({
         mutationFn: async () => {
-            return await axiosClient.post(`/supplier`, formData);
+            return await axiosClient.post(`/user`, formData);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ predicate: query => query.queryKey[0] === 'supplier' });
+            queryClient.invalidateQueries({ predicate: query => query.queryKey[0] === 'user' });
             setLoading(false);
             setErrorMsg(null);
-            toast.success('Berhasil menambahkan supplier')
+            toast.success('Berhasil menambahkan user')
             onClose();
         },
         onError: (error: any) => {
@@ -74,13 +85,13 @@ const SupplierModal = ({ state, selectedData, formData, type, onClose, formInput
 
     const updateMutation = useMutation({
         mutationFn: async () => {
-            return await axiosClient.put(`/supplier/${selectedData!.id}`, formData);
+            return await axiosClient.put(`/user/${selectedData!.id}`, formData);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ predicate: query => query.queryKey[0] === 'supplier' });
+            queryClient.invalidateQueries({ predicate: query => query.queryKey[0] === 'user' });
             setLoading(false);
             setErrorMsg(null);
-            toast.success('Berhasil memperbarui supplier');
+            toast.success('Berhasil memperbarui user');
             onClose();
         },
         onError: (error: any) => {
@@ -93,12 +104,12 @@ const SupplierModal = ({ state, selectedData, formData, type, onClose, formInput
 
     const deleteMutation = useMutation({
         mutationFn: async () => {
-            return await axiosClient.delete(`/supplier/${selectedData!.id}`);
+            return await axiosClient.delete(`/user/${selectedData!.id}`);
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ predicate: query => query.queryKey[0] === 'supplier' });
+            queryClient.invalidateQueries({ predicate: query => query.queryKey[0] === 'user' });
             setLoading(false);
-            toast.success('Berhasil menghapus supplier');
+            toast.success('Berhasil menghapus user');
             onClose();
         },
         onError: (error: any) => {
@@ -139,37 +150,23 @@ const SupplierModal = ({ state, selectedData, formData, type, onClose, formInput
                                     {type === 'read' && 'Data '}
                                     {type === 'update' && 'Ubah '}
                                     {type === 'delete' && 'Hapus '}
-                                    Supplier
+                                    User
                                 </DialogTitle>
                             </div>
                             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                                 {['create', 'update', 'read'].includes(type) &&
                                     <form onSubmit={submitForm} className="space-y-4" id='Form'>
                                         <div>
-                                            <label className="block text-gray-700 mb-1" htmlFor="supplier">Supplier*</label>
-                                            {errorMsg && <span className='text-red-500'>{errorMsg?.supplier}</span>}
+                                            <label className="block text-gray-700 mb-1" htmlFor="name">Nama</label>
+                                            {errorMsg && <span className='text-red-500'>{errorMsg?.name}</span>}
                                             <input
-                                                name='supplier'
+                                                name='name'
                                                 onChange={formInputChange}
-                                                value={formData?.supplier}
+                                                value={formData?.name}
                                                 type="text"
-                                                id="supplier"
+                                                id="name"
                                                 className="form-input"
-                                                placeholder="Nama supplier..."
-                                                disabled={type === 'read'}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-gray-700 mb-1" htmlFor="kontak">Kontak*</label>
-                                            {errorMsg && <span className='text-red-500'>{errorMsg?.kontak}</span>}
-                                            <input
-                                                name='kontak'
-                                                onChange={formInputChange}
-                                                value={formData?.kontak}
-                                                type="text"
-                                                id="kontak"
-                                                className="form-input"
-                                                placeholder="Nomor kontak..."
+                                                placeholder="Nama user..."
                                                 disabled={type === 'read'}
                                             />
                                         </div>
@@ -188,39 +185,60 @@ const SupplierModal = ({ state, selectedData, formData, type, onClose, formInput
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-gray-700 mb-1" htmlFor="alamat">Alamat</label>
-                                            {errorMsg && <span className='text-red-500'>{errorMsg?.alamat}</span>}
-                                            <textarea
-                                                name="alamat"
+                                            <label className="block text-gray-700 mb-1" htmlFor="role">Role</label>
+                                            {errorMsg && <span className='text-red-500'>{errorMsg?.role}</span>}
+                                            {/* <input
+                                                name='role'
                                                 onChange={formInputChange}
-                                                value={formData?.alamat}
-                                                id="alamat"
+                                                value={formData?.role}
+                                                type="text"
+                                                id="role"
                                                 className="form-input"
-                                                placeholder="Masukkan alamat supplier..."
-                                                rows={4}
                                                 disabled={type === 'read'}
+                                            /> */}
+                                            <SelectGeneric
+                                                name="role"
+                                                value={formData!.role}
+                                                onChange={formInputChange!}
+                                                options={roleOptions}
+                                                isDisabled={type === 'read'}
                                             />
                                         </div>
-                                        <div>
-                                            <label className="block text-gray-700 mb-1" htmlFor="deskripsi">Deskripsi</label>
-                                            {errorMsg && <span className='text-red-500'>{errorMsg?.deskripsi}</span>}
-                                            <textarea
-                                                name="deskripsi"
-                                                onChange={formInputChange}
-                                                value={formData?.deskripsi}
-                                                id="deskripsi"
-                                                className="form-input"
-                                                placeholder="Deskripsi tambahan..."
-                                                rows={4}
-                                                disabled={type === 'read'}
-                                            />
-                                        </div>
+                                        {['create', 'update'].includes(type) &&
+                                            <>
+                                                <div>
+                                                    <label className="block text-gray-700 mb-1" htmlFor="password">Password</label>
+                                                    {errorMsg && <span className='text-red-500'>{errorMsg?.password}</span>}
+                                                    <input
+                                                        name='password'
+                                                        onChange={formInputChange}
+                                                        value={formData?.password}
+                                                        type="password"
+                                                        id="password"
+                                                        className="form-input"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-gray-700 mb-1" htmlFor="password_confirmation">Confirm Password</label>
+                                                    {errorMsg && <span className='text-red-500'>{errorMsg?.password_confirmation}</span>}
+                                                    <input
+                                                        name='password_confirmation'
+                                                        onChange={formInputChange}
+                                                        value={formData?.password_confirmation}
+                                                        type="password"
+                                                        id="password_confirmation"
+                                                        className="form-input"
+                                                        disabled={type === 'read'}
+                                                    />
+                                                </div>
+                                            </>
+                                        }
                                     </form>
                                 }
                                 {['delete'].includes(type) &&
                                     <div className='text-gray-500'>
                                         <p>Yakin ingin hapus ?</p>
-                                        <p>Data supplier <span className='text-red-500'>{selectedData?.supplier}</span> akan dihapus selamanya.</p>
+                                        <p>Data user <span className='text-red-500'>{selectedData?.name}</span> akan dihapus selamanya.</p>
                                     </div>
                                 }
                             </div>
@@ -261,4 +279,4 @@ const SupplierModal = ({ state, selectedData, formData, type, onClose, formInput
     )
 }
 
-export default SupplierModal
+export default UserModal

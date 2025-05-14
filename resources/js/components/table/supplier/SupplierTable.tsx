@@ -13,8 +13,9 @@ import { useEffect, useState } from 'react';
 import Spinner from '../../Spinner';
 import { EyeIcon, PencilIcon, TrashIcon, MagnifyingGlassIcon as MagGlassI } from '@heroicons/react/16/solid';
 import { useDebounce } from 'use-debounce';
-import PaginationControls from '../PaginationControls';
 import SupplierModal from './SupplierModal';
+import TopBar from '../TopBar';
+import BottomBar from '../BottomBar';
 
 interface formDataType {
     supplier: string;
@@ -181,19 +182,13 @@ const SupplierTable = () => {
         <>
             {/* Table */}
             <div className='overflow-x-auto mt-2'>
-                <div className='flex justify-between'>
-                    <div className="inline-flex items-center space-x-2 p-2 rounded-sm rounded-b-none bg-white">
-                        <MagGlassI className="w-5 h-5 text-blue-500" />
-                        <input type="search" className="border-0 focus:ring-0 outline-none bg-white"
-                            placeholder="Search..."
-                            value={search}
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                                setPagination(prev => ({ ...prev, pageIndex: 0 }));
-                            }} />
-                    </div>
-                    <button onClick={() => setPostModal(true)}>Tambah</button>
-                </div>
+                <TopBar
+                    searchValue={search}
+                    onChangeSearch={(e) => {
+                        setSearch(e.target.value);
+                        setPagination(prev => ({ ...prev, pageIndex: 0 }));
+                    }}
+                    onClickTambah={() => setPostModal(true)} />
                 <div className='relative'>
                     {isFetching &&
                         <div className='absolute w-full h-full flex items-center justify-center bg-white opacity-50'>
@@ -238,7 +233,7 @@ const SupplierTable = () => {
                 </div>
             </div>
             {/* Paginasi */}
-            <PaginationControls table={table} />
+            <BottomBar table={table} />
 
             {/* Modal */}
             <SupplierModal state={detailsModal} type='read' formData={formData} onClose={() => setDetailsModal(false)} selectedData={selectedData} />

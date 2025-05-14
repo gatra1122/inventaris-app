@@ -1,11 +1,10 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import UserTable from '../../components/table/user/UserTable'
 
 const User = () => {
   return (
     <div>
-      <h1>User</h1>
-      <Link to={'/'} >Dashboard</Link>
+      <h2>User</h2>
+      <UserTable />
     </div>
   )
 }

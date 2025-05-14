@@ -1,6 +1,6 @@
 import { formatWIB } from '../../../utils/dateUtils';
-import { BarangType, SupplierType } from '../../../types';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { BarangType } from '../../../types';
+import { useQuery } from '@tanstack/react-query';
 import {
   createColumnHelper,
   flexRender,
@@ -9,29 +9,15 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import axiosClient from '../../../utils/axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Spinner from '../../Spinner';
 import { EyeIcon, PencilIcon, TrashIcon, MagnifyingGlassIcon as MagGlassI } from '@heroicons/react/16/solid';
 import { useDebounce } from 'use-debounce';
-import PaginationControls from '../PaginationControls';
 import BarangModal from './BarangModal';
-import ControlPagination from '../ControlPagination';
-
-interface formDataType {
-  kode: string;
-  nama: string;
-  kategori_id: number;
-  supplier_id: number;
-  merk: string;
-  spesifikasi: string;
-  satuan: string;
-  stok: number;
-  stok_minimum: number;
-  gambar: string;
-}
+import BottomBar from '../BottomBar';
+import TopBar from '../TopBar';
 
 const BarangTable = () => {
-  const queryClient = useQueryClient();
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 500);
   const [selectedData, setSelectedData] = useState<BarangType | null>(null);
@@ -136,19 +122,13 @@ const BarangTable = () => {
     <>
       {/* Table */}
       <div className='overflow-x-auto mt-2'>
-        <div className='flex justify-between'>
-          <div className="inline-flex items-center space-x-2 p-2 rounded-sm rounded-b-none bg-white">
-            <MagGlassI className="w-5 h-5 text-blue-500" />
-            <input type="search" className="border-0 focus:ring-0 outline-none bg-white"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value);
-                setPagination(prev => ({ ...prev, pageIndex: 0 }));
-              }} />
-          </div>
-          <button onClick={() => setPostModal(true)}>Tambah</button>
-        </div>
+        <TopBar
+          searchValue={search}
+          onChangeSearch={(e) => {
+            setSearch(e.target.value);
+            setPagination(prev => ({ ...prev, pageIndex: 0 }));
+          }}
+          onClickTambah={() => setPostModal(true)} />
         <div className='relative'>
           {isFetching &&
             <div className='absolute w-full h-full flex items-center justify-center bg-white opacity-50'>
@@ -193,8 +173,7 @@ const BarangTable = () => {
         </div>
       </div>
       {/* Paginasi */}
-      {/* <PaginationControls table={table} /> */}
-      <ControlPagination table={table} />
+      <BottomBar table={table} />
 
       {/* Modal */}
       <BarangModal state={detailsModal} type='read' onClose={() => setDetailsModal(false)} selectedData={selectedData} />

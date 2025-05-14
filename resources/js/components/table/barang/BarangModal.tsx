@@ -198,7 +198,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                                 value={formData?.nama}
                                                 type="text"
                                                 id="nama"
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
+                                                className="form-input"
                                                 placeholder="Nama barang..."
                                                 disabled={type === 'read'}
                                             />
@@ -222,7 +222,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                                 value={formData?.merk}
                                                 type="text"
                                                 id="merk"
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
+                                                className="form-input"
                                                 placeholder="Merk barang..."
                                                 disabled={type === 'read'}
                                             />
@@ -237,7 +237,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                                     value={formData?.stok}
                                                     type="number"
                                                     id="stok"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
+                                                    className="form-input"
                                                     disabled={type === 'read'}
                                                     min={1}
                                                 />
@@ -251,7 +251,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                                     value={formData?.stok_minimum}
                                                     type="number"
                                                     id="stok_minimum"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
+                                                    className="form-input"
                                                     disabled={type === 'read'}
                                                     min={1}
                                                 />
@@ -282,7 +282,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                                 onChange={formInputChange}
                                                 value={formData?.spesifikasi}
                                                 id="spesifikasi"
-                                                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
+                                                className="form-input"
                                                 placeholder="Spesifikasi tambahan..."
                                                 rows={4}
                                                 disabled={type === 'read'}

@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController as Auth;
-use App\Http\Controllers\Api\UsersController as Users;
+use App\Http\Controllers\Api\UserController as User;
 use App\Http\Controllers\Api\BarangController as Barang;
 use App\Http\Controllers\Api\KategoriController  as Kategori;
 use App\Http\Controllers\Api\SupplierController as Supplier;
@@ -33,12 +33,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Users routes
-    // Route::controller(Users::class)->group(function () {
-    //     Route::get('users', 'index');
-    //     Route::get('users/{id}', 'show');
-    //     Route::put('users/{id}', 'update');
-    //     Route::delete('users/{id}', 'destroy');
-    // });
+    Route::controller(User::class)->group(function () {
+        Route::get('user', 'index');
+        Route::get('user/{id}', 'show');
+        Route::post('user', 'store');
+        Route::put('user/{id}', 'update');
+        Route::delete('user/{id}', 'destroy');
+    });
 
     // Kategori routes
     Route::controller(Kategori::class)->group(function () {

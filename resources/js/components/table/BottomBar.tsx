@@ -48,7 +48,7 @@ function getCenteredPagination(current: number, total: number, maxPagesToShow = 
 }
 
 
-const ControlPagination = <T,>({ table }: PaginationControlsProps<T>) => {
+const BottomBar = <T,>({ table }: PaginationControlsProps<T>) => {
     const pageIndex = table.getState().pagination.pageIndex;
     const pageCount = table.getPageCount();
 
@@ -62,7 +62,7 @@ const ControlPagination = <T,>({ table }: PaginationControlsProps<T>) => {
 
 
     return (
-        <div className='bg-white px-4 py-2'>
+        <div className='bg-white px-4 py-2 rounded-b-md'>
             <div className="flex flex-wrap justify-between items-center gap-2">
                 <div className='inline-flex gap-3 items-center'>
                     <span className="flex items-center gap-1">
@@ -89,7 +89,6 @@ const ControlPagination = <T,>({ table }: PaginationControlsProps<T>) => {
                         />
                     </span>
                 </div>
-
                 <div className='inline-flex gap-1 items-center flex-wrap'>
                     <button
                         className='px-2 py-1 border rounded disabled:opacity-75'
@@ -98,15 +97,6 @@ const ControlPagination = <T,>({ table }: PaginationControlsProps<T>) => {
                     >
                         <CevDLeftI className='size-4 inline' />
                     </button>
-
-                    {/* <button
-                        className='px-2 py-1 border rounded disabled:opacity-50'
-                        onClick={() => table.previousPage()}
-                        disabled={!table.getCanPreviousPage()}
-                    >
-                        <CevLeftI className='size-4 inline' /> Previous
-                    </button> */}
-
                     {pagesToShow.map((page) => (
                         <button
                             key={page}
@@ -117,15 +107,6 @@ const ControlPagination = <T,>({ table }: PaginationControlsProps<T>) => {
                             {page}
                         </button>
                     ))}
-
-                    {/* <button
-                        className='px-2 py-1 border rounded disabled:opacity-50'
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
-                    >
-                        Next <CevRightI className='size-4 inline' />
-                    </button> */}
-
                     <button
                         className='px-2 py-1 border rounded disabled:opacity-75'
                         onClick={() => table.lastPage()}
@@ -139,4 +120,4 @@ const ControlPagination = <T,>({ table }: PaginationControlsProps<T>) => {
     );
 };
 
-export default ControlPagination;
+export default BottomBar;

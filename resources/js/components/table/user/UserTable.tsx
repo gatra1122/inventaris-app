@@ -1,7 +1,6 @@
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { formatWIB } from '../../../utils/dateUtils';
-import { KategoriType } from '../../../types';
-import { useQuery } from '@tanstack/react-query';
+import { SupplierType, UserType } from '../../../types';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
     createColumnHelper,
     flexRender,
@@ -12,19 +11,25 @@ import {
 import axiosClient from '../../../utils/axios';
 import { useEffect, useState } from 'react';
 import Spinner from '../../Spinner';
+import { EyeIcon, PencilIcon, TrashIcon, MagnifyingGlassIcon as MagGlassI } from '@heroicons/react/16/solid';
 import { useDebounce } from 'use-debounce';
-import KategoriModal from './KategoriModal';
-import BottomBar from '../BottomBar';
+import UserModal from './UserModal';
 import TopBar from '../TopBar';
+import BottomBar from '../BottomBar';
 
 interface formDataType {
-    kategori: string;
+    name: string;
+    email: string;
+    role: string;
+    password: string;
+    password_confirmation: string;
 }
 
-const KategoriTable = () => {
+const UserTable = () => {
+    const queryClient = useQueryClient();
     const [search, setSearch] = useState('');
     const [debouncedSearch] = useDebounce(search, 500);
-    const [selectedData, setSelectedData] = useState<KategoriType | null>(null);
+    const [selectedData, setSelectedData] = useState<UserType | null>(null);
     const [deleteModal, setDeleteModal] = useState(false);
     const [updateModal, setUpdateModal] = useState(false);
     const [postModal, setPostModal] = useState(false);
@@ -36,9 +41,9 @@ const KategoriTable = () => {
     })
 
     const { data, error, isFetching } = useQuery({
-        queryKey: ['kategori', pagination.pageIndex, debouncedSearch],
+        queryKey: ['user', pagination.pageIndex, debouncedSearch],
         queryFn: () => {
-            return axiosClient.get('/kategori', {
+            return axiosClient.get('/user', {
                 params: {
                     page: pagination.pageIndex + 1,
                     per_page: pagination.pageSize,
@@ -54,7 +59,7 @@ const KategoriTable = () => {
         placeholderData: (prev) => prev
     });
 
-    const columnHelper = createColumnHelper<KategoriType>()
+    const columnHelper = createColumnHelper<UserType>()
     const columns = [
         {
             id: 'row-number',
@@ -63,8 +68,12 @@ const KategoriTable = () => {
                 return pagination.pageIndex * pagination.pageSize + info.row.index + 1;
             },
         },
-        columnHelper.accessor('kategori', {
-            header: 'Kategori',
+        columnHelper.accessor('name', {
+            header: 'Nama',
+            cell: (info) => <span className='capitalize'>{info.cell.getValue()}</span>,
+        }),
+        columnHelper.accessor('role', {
+            header: 'Role',
             cell: (info) => <span className='capitalize'>{info.cell.getValue()}</span>,
         }),
         columnHelper.accessor('updated_at', {
@@ -81,17 +90,23 @@ const KategoriTable = () => {
             footer: 'Action',
             cell: ({ row }: any) => (
                 <div className='inline-flex gap-1'>
-                    <button className='!bg-yellow-500 inline-flex items-center gap-1' onClick={() => {
+                    <button className='bg-cyan-500 inline-flex items-center gap-1' onClick={() => {
+                        setSelectedData(row.original);
+                        setDetailsModal(true);
+                    }}>
+                        <EyeIcon className='size-5' />Lihat
+                    </button>
+                    <button className='bg-yellow-500 inline-flex items-center gap-1' onClick={() => {
                         setSelectedData(row.original);
                         setUpdateModal(true);
                     }}>
-                        <PencilIcon className='size-5' />Edit
+                        <PencilIcon className='size-5' />Ubah
                     </button>
-                    <button className='!bg-red-500 inline-flex items-center gap-1' onClick={() => {
+                    <button className='bg-red-500 inline-flex items-center gap-1' onClick={() => {
                         setSelectedData(row.original);
                         setDeleteModal(true);
                     }}>
-                        <TrashIcon className='size-5' />Delete
+                        <TrashIcon className='size-5' />Hapus
                     </button>
                 </div>
             ),
@@ -114,9 +129,13 @@ const KategoriTable = () => {
     })
 
     const [formData, setFormData] = useState<formDataType>({
-        kategori: '',
+        name: '',
+        email: '',
+        role: '',
+        password: '',
+        password_confirmation: '',
     })
-    const formInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+    const formInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | React.ChangeEvent<HTMLSelectElement>) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
@@ -124,12 +143,20 @@ const KategoriTable = () => {
     }
     const resetForm = () => {
         setFormData({
-            kategori: '',
+            name: '',
+            email: '',
+            role: '',
+            password: '',
+            password_confirmation: '',
         });
     };
     const fillForm = () => {
         setFormData({
-            kategori: selectedData?.kategori || '',
+            name: selectedData?.name || '',
+            email: selectedData?.email || '',
+            role: selectedData?.role || '',
+            password: '',
+            password_confirmation: '',
         });
     };
 
@@ -152,6 +179,7 @@ const KategoriTable = () => {
             resetForm();
         }
     }, [detailsModal]);
+
     if (error) return <p>Error loading data</p>;
 
     return (
@@ -212,11 +240,12 @@ const KategoriTable = () => {
             <BottomBar table={table} />
 
             {/* Modal */}
-            <KategoriModal state={postModal} type='create' formData={formData} onClose={() => setPostModal(false)} formInputChange={formInputChange} selectedData={selectedData} />
-            <KategoriModal state={updateModal} type='update' formData={formData} onClose={() => setUpdateModal(false)} formInputChange={formInputChange} selectedData={selectedData} />
-            <KategoriModal state={deleteModal} type='delete' onClose={() => setDeleteModal(false)} selectedData={selectedData} />
+            <UserModal state={detailsModal} type='read' formData={formData} onClose={() => setDetailsModal(false)} selectedData={selectedData} />
+            <UserModal state={postModal} type='create' formData={formData} onClose={() => setPostModal(false)} formInputChange={formInputChange} selectedData={selectedData} />
+            <UserModal state={updateModal} type='update' formData={formData} onClose={() => setUpdateModal(false)} formInputChange={formInputChange} selectedData={selectedData} />
+            <UserModal state={deleteModal} type='delete' onClose={() => setDeleteModal(false)} selectedData={selectedData} />
         </>
     )
 }
 
-export default KategoriTable;
+export default UserTable;
