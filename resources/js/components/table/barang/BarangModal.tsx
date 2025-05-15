@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import axiosClient from '../../../utils/axios';
 import SelectOptions from './SelectOptions';
+import SelectGeneric from '../SelectGeneric';
 
 interface formDataType {
     kode: string;
@@ -151,6 +152,43 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
         }
     }
 
+    const { data: listKategori } = useQuery({
+        queryKey: ['list_kategori'],
+        queryFn: () => {
+            return axiosClient.get('/barang/listkategori').then(response => {
+                return response.data.data;
+            }).catch(error => {
+                throw error;
+            })
+        },
+        staleTime: 1000 * 60 * 5,
+        enabled: ['update', 'create'].includes(type),
+        refetchOnMount: true,
+    });
+
+    const { data: listSupplier } = useQuery({
+        queryKey: ['list_supplier'],
+        queryFn: () => {
+            return axiosClient.get('/barang/listsupplier').then(response => {
+                return response.data.data;
+            }).catch(error => {
+                throw error;
+            })
+        },
+        staleTime: 1000 * 60 * 5,
+        enabled: ['update', 'create'].includes(type),
+        refetchOnMount: true
+    });
+
+    const kategoriOptions = listKategori?.map((item: { id: any; kategori: any; }) => ({
+        value: item.id,
+        label: item.kategori
+    }));
+    const supplierOptions = listSupplier?.map((item: { id: any; supplier: any; }) => ({
+        value: item.id,
+        label: item.supplier
+    }));
+
     useEffect(() => {
         if (state) {
             if (['update', 'read'].includes(type)) {
@@ -206,12 +244,26 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                         </div>
                                         <div>
                                             <label className="block text-gray-700 mb-1" htmlFor="kategori_id">Kategori</label>
-                                            <SelectOptions formData={formData} formInputChange={formInputChange} isDisabled={type === 'read'} selectType='kategori' />
+                                            <SelectGeneric
+                                                name="kategori_id"
+                                                value={formData!.kategori_id}
+                                                onChange={formInputChange!}
+                                                options={kategoriOptions}
+                                                isDisabled={type === 'read'}
+                                            />
+                                            {/* <SelectOptions formData={formData} formInputChange={formInputChange} isDisabled={type === 'read'} selectType='kategori' /> */}
                                             {errorMsg && <span className='text-red-500'>{errorMsg?.kategori_id}</span>}
                                         </div>
                                         <div>
                                             <label className="block text-gray-700 mb-1" htmlFor="supplier_id">Supplier</label>
-                                            <SelectOptions formData={formData} formInputChange={formInputChange} isDisabled={type === 'read'} selectType='supplier' />
+                                            <SelectGeneric
+                                                name="supplier_id"
+                                                value={formData!.supplier_id}
+                                                onChange={formInputChange!}
+                                                options={kategoriOptions}
+                                                isDisabled={type === 'read'}
+                                            />
+                                            {/* <SelectOptions formData={formData} formInputChange={formInputChange} isDisabled={type === 'read'} selectType='supplier' /> */}
                                             {errorMsg && <span className='text-red-500'>{errorMsg?.supplier_id}</span>}
                                         </div>
                                         <div>

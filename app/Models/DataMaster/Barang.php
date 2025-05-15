@@ -15,10 +15,15 @@ class Barang extends Model
 
     public function kategori()
     {
-        return $this->belongsTo(Kategori::class, 'kategori_id');
+        // return $this->belongsTo(Kategori::class, 'kategori_id');
+        return $this->belongsTo(Kategori::class, 'kategori_id')->withDefault([
+            'kategori' => 'Tanpa Kategori',
+        ]);
     }
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class, 'supplier_id');
+        return $this->belongsTo(Supplier::class, 'supplier_id')->withDefault([
+            'kategori' => 'Tanpa Supplier',
+        ]);
     }
 }

@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 
 type SelectKategoriProps = {
     formData: { [key: string]: any };
-    formInputChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+    formInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     isDisabled?: boolean;
     selectType: 'kategori' | 'supplier';
 };
@@ -60,7 +60,7 @@ const SelectOptions: React.FC<SelectKategoriProps> = ({
                 name: selectType === 'kategori' ? 'kategori_id' : 'supplier_id',
                 value: selectedOption ? selectedOption.value : ''
             }
-        } as React.ChangeEvent<HTMLSelectElement>;
+        } as React.ChangeEvent<HTMLInputElement>;
 
         formInputChange(fakeEvent);
     };

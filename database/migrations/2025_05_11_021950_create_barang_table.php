@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('kode')->unique();
             $table->string('nama');
-            $table->foreignId('kategori_id')->constrained('kategori')->onDelete('cascade');
-            $table->foreignId('supplier_id')->constrained('supplier')->onDelete('cascade');
+            $table->foreignId('kategori_id')->nullable()->constrained('kategori')->onDelete('set null');
+            $table->foreignId('supplier_id')->nullable()->constrained('supplier')->onDelete('set null');
             $table->string('merk')->nullable();
             $table->text('spesifikasi')->nullable();
             $table->string('satuan', 50);
