@@ -4,7 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/re
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import axiosClient from '../../../utils/axios';
-import SelectGeneric from '../SelectGeneric';
+import SelectInput from '../SelectInput';
 
 interface formDataType {
     name: string;
@@ -187,16 +187,7 @@ const UserModal = ({ state, selectedData, formData, type, onClose, formInputChan
                                         <div>
                                             <label className="block text-gray-700 mb-1" htmlFor="role">Role</label>
                                             {errorMsg && <span className='text-red-500'>{errorMsg?.role}</span>}
-                                            {/* <input
-                                                name='role'
-                                                onChange={formInputChange}
-                                                value={formData?.role}
-                                                type="text"
-                                                id="role"
-                                                className="form-input"
-                                                disabled={type === 'read'}
-                                            /> */}
-                                            <SelectGeneric
+                                            <SelectInput
                                                 name="role"
                                                 value={formData!.role}
                                                 onChange={formInputChange!}

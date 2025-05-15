@@ -4,8 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/re
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import axiosClient from '../../../utils/axios';
-import SelectOptions from './SelectOptions';
-import SelectGeneric from '../SelectGeneric';
+import SelectInput from '../SelectInput';
 
 interface formDataType {
     kode: string;
@@ -152,7 +151,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
         }
     }
 
-    const { data: listKategori } = useQuery({
+    const { data: listKategori, isFetching: kategoriFetching } = useQuery({
         queryKey: ['list_kategori'],
         queryFn: () => {
             return axiosClient.get('/barang/listkategori').then(response => {
@@ -166,7 +165,7 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
         refetchOnMount: true,
     });
 
-    const { data: listSupplier } = useQuery({
+    const { data: listSupplier, isFetching: supplierFetching } = useQuery({
         queryKey: ['list_supplier'],
         queryFn: () => {
             return axiosClient.get('/barang/listsupplier').then(response => {
@@ -244,26 +243,26 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                         </div>
                                         <div>
                                             <label className="block text-gray-700 mb-1" htmlFor="kategori_id">Kategori</label>
-                                            <SelectGeneric
+                                            <SelectInput
                                                 name="kategori_id"
                                                 value={formData!.kategori_id}
                                                 onChange={formInputChange!}
                                                 options={kategoriOptions}
                                                 isDisabled={type === 'read'}
+                                                isLoading={kategoriFetching}
                                             />
-                                            {/* <SelectOptions formData={formData} formInputChange={formInputChange} isDisabled={type === 'read'} selectType='kategori' /> */}
                                             {errorMsg && <span className='text-red-500'>{errorMsg?.kategori_id}</span>}
                                         </div>
                                         <div>
                                             <label className="block text-gray-700 mb-1" htmlFor="supplier_id">Supplier</label>
-                                            <SelectGeneric
+                                            <SelectInput
                                                 name="supplier_id"
                                                 value={formData!.supplier_id}
                                                 onChange={formInputChange!}
-                                                options={kategoriOptions}
+                                                options={supplierOptions}
                                                 isDisabled={type === 'read'}
+                                                isLoading={supplierFetching}
                                             />
-                                            {/* <SelectOptions formData={formData} formInputChange={formInputChange} isDisabled={type === 'read'} selectType='supplier' /> */}
                                             {errorMsg && <span className='text-red-500'>{errorMsg?.supplier_id}</span>}
                                         </div>
                                         <div>
@@ -311,19 +310,16 @@ const BarangModal = ({ state, selectedData, type, onClose }: ModalProps) => {
                                             </div>
                                             <div>
                                                 <label className="block text-gray-700 mb-1" htmlFor="satuan">Satuan</label>
-                                                <select
+                                                <SelectInput
                                                     name='satuan'
-                                                    onChange={formInputChange}
                                                     value={formData?.satuan}
-                                                    id="satuan"
-                                                    className="w-full px-4 py-2 border border-gray-300 rounded-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:text-gray-500 disabled:bg-gray-100"
-                                                    disabled={type === 'read'}
-                                                >
-                                                    <option value="">Pilih satuan...</option>
-                                                    <option value="KG">KG</option>
-                                                    <option value="Pcs">Pcs</option>
-                                                    <option value="Unit">Unit</option>
-                                                </select>
+                                                    onChange={formInputChange}
+                                                    options={[
+                                                        { value: 'KG', label: 'KG' },
+                                                        { value: 'Pcs', label: 'Pcs' },
+                                                        { value: 'Unit', label: 'Unit' },
+                                                    ]}
+                                                    isDisabled={type === 'read'} />
                                                 {errorMsg && <span className='text-red-500'>{errorMsg?.satuan}</span>}
                                             </div>
                                         </div>
