@@ -36,30 +36,6 @@ const SelectInput: React.FC<Props> = ({ name, value, onChange, options, isDisabl
       isLoading={isLoading}
       className='form-select'
       classNamePrefix="form-select"
-    // classNames={{
-    //   clearIndicator: () => '',
-    //   control: () => '!rounded-none !border-0',
-    //   dropdownIndicator: () => '',
-    //   container: () => '',
-    //   group: () => '',
-    //   groupHeading: () => '',
-    //   indicatorsContainer: ({ isDisabled }) => `${isDisabled ? 'bg-gray-100' : ''}`,
-    //   indicatorSeparator: () => '',
-    //   input: () => '',
-    //   loadingIndicator: () => '',
-    //   loadingMessage: () => '',
-    //   menu: () => '',
-    //   menuList: () => '',
-    //   menuPortal: () => '',
-    //   multiValue: () => '',
-    //   multiValueLabel: () => '',
-    //   multiValueRemove: () => '',
-    //   noOptionsMessage: () => '',
-    //   option: () => '',
-    //   placeholder: () => '',
-    //   singleValue: () => '',
-    //   valueContainer: ({ isDisabled }) => `${isDisabled ? 'bg-gray-100' : ''}`,
-    // }}
     />
   );
 };
